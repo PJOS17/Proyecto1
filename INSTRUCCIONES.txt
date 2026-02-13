@@ -1,0 +1,83 @@
+=== GUÍA DE USO - INTÉRPRETE DE BITCOIN SCRIPT ===
+
+1. COMPILACIÓN (Requerido si haces cambios)
+   Ejecuta en la terminal:
+   mvn compile
+
+2. MODO INTERACTIVO (Recomendado)
+   java -cp "target\classes" com.bitcoin.Main
+
+3. EJEMPLO DE USO (Dentro del programa)
+   Una vez iniciado, verás el prompt ">". Prueba lo siguiente:
+
+   > OP_1
+     (Salida esperada: Stack: [0x01])
+   
+   > OP_2
+     (Salida esperada: Stack: [0x01, 0x02])
+   
+   > OP_ADD
+     (Salida esperada: Stack: [0x03])
+
+   > 5
+     (Salida esperada: Stack: [0x03, 0x05])
+
+   > OP_GREATERTHAN
+     (Salida esperada: Stack: [0x00] -> FALSO, porque 3 no es mayor que 5)
+
+4. PRUEBA DE PAGO (P2PKH) REQUERIDA
+   Para ver la demostración automática de P2PKH (<firma> <pubKey> OP_DUP ...):
+   run_p2pkh.bat
+   
+   Esto generará un script válido con firma y hash correctos y lo ejecutará.
+
+5. COMANDOS ÚTILES
+   - trace on   : Activa el modo detallado (ver pila tras cada paso).
+   - trace off  : Desactiva el modo detallado.
+   - clear      : Limpia toda la pila (reinicia).
+   - exit       : Salir del programa.
+
+5. EJECUTAR UN SCRIPT COMPLETO
+   Si quieres correr una línea entera de una vez:
+   java -cp "target\classes" com.bitcoin.Main --trace "1 2 OP_ADD 5 OP_GREATERTHAN"
+
+6. LISTA DE COMANDOS (OPCODES) DISPONIBLES
+   
+   Constantes:
+   - OP_0 / OP_FALSE : Empuja 0 (array vacío) a la pila.
+   - OP_1 .. OP_16   : Empuja el número correspondiente (1 al 16).
+   - <número>        : Cualquier número (ej. "5", "-99") se empuja automáticamente.
+   - <hex>           : Cualquier hex (ej. "0xFF") se empuja como bytes.
+
+   Pila:
+   - OP_DUP          : Duplica el elemento superior.
+   - OP_DROP         : Elimina el elemento superior.
+   - OP_SWAP         : Intercambia los dos elementos superiores.
+   - OP_OVER         : Copia el segundo elemento y lo pone arriba.
+
+   Lógica:
+   - OP_EQUAL        : Retorna TRUE si los dos topes son iguales (consume ambos).
+   - OP_EQUALVERIFY  : Igual que OP_EQUAL, pero falla el script si no son iguales.
+   - OP_VERIFY       : Falla si el tope es falso.
+   - OP_NOT          : Invierte el valor booleano (0->1, 1->0).
+   - OP_BOOLAND      : AND lógico.
+   - OP_BOOLOR       : OR lógico.
+
+   Aritmética:
+   - OP_ADD          : Suma los dos números superiores.
+   - OP_SUB          : Resta los dos números superiores.
+   - OP_LESSTHAN     : Verdadero si a < b.
+   - OP_GREATERTHAN  : Verdadero si a > b.
+   - OP_NUMEQUALVERIFY : Falla si los números no son iguales numéricamente.
+
+   Criptografía (Simulada):
+   - OP_HASH160      : Aplica SHA256 -> RIPEMD160 al tope.
+   - OP_HASH256      : Aplica SHA256 -> SHA256 al tope.
+   - OP_CHECKSIG     : Verifica firma (Simulado: siempre true para ejemplos válidos).
+   - OP_CHECKSIGVERIFY : Igual que CHECKSIG, pero falla si es inválido.
+
+   Control de Flujo:
+   - OP_IF           : Ejecuta el bloque si el tope es verdadero.
+   - OP_NOTIF        : Ejecuta el bloque si el tope es falso.
+   - OP_ELSE         : Rama alternativa.
+   - OP_ENDIF        : Fin del bloque condicional.
