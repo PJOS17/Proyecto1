@@ -329,6 +329,56 @@ public enum OpCode {
         public void execute(DataStack stack, Interpreter interpreter) {
             interpreter.handleEndIf();
         }
+    },
+
+    // Criptografía avanzada
+    OP_SHA256(0xa8) {
+        @Override
+        public void execute(DataStack stack, Interpreter interpreter) {
+            try {
+                java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
+                stack.push(digest.digest(stack.pop()));
+            } catch (java.security.NoSuchAlgorithmException e) {
+                throw new RuntimeException("SHA-256 no disponible");
+            }
+        }
+    },
+    OP_CHECKMULTISIG(0xae) {
+        @Override
+        public void execute(DataStack stack, Interpreter interpreter) {
+            // Protocolo: n pubKeys, m firmas, dummy (bug histórico de Bitcoin)
+            int n = (int) stack.popAsLong(); // número de pubKeys
+            byte[][] pubKeys = new byte[n][];
+            for (int i = 0; i < n; i++) {
+                pubKeys[i] = stack.pop();
+            }
+            int m = (int) stack.popAsLong(); // número de firmas requeridas
+            byte[][] sigs = new byte[m][];
+            for (int i = 0; i < m; i++) {
+                sigs[i] = stack.pop();
+            }
+            stack.pop(); // dummy value (bug histórico de Bitcoin)
+
+            // Verificación simulada: m firmas deben coincidir con m pubKeys distintas
+            int matched = 0;
+            int pkIdx = 0;
+            for (int s = 0; s < m && pkIdx < n; s++) {
+                if (Crypto.checkSig(sigs[s], pubKeys[pkIdx], new byte[0])) {
+                    matched++;
+                }
+                pkIdx++;
+            }
+            stack.pushBool(matched >= m);
+        }
+    },
+    OP_CHECKMULTISIGVERIFY(0xaf) {
+        @Override
+        public void execute(DataStack stack, Interpreter interpreter) {
+            OP_CHECKMULTISIG.execute(stack, interpreter);
+            if (!stack.popAsBool()) {
+                throw new RuntimeException("OP_CHECKMULTISIGVERIFY falló");
+            }
+        }
     };
 
     private final int value;

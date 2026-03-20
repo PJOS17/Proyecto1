@@ -1,21 +1,27 @@
+Integrantes:
+Pablo Orantes #25563
+Fabiola Garzaro #25504
+Raul Godinez #25094
+
 === GUÍA DE USO - INTÉRPRETE DE BITCOIN SCRIPT ===
 
-1. COMPILACIÓN (Requerido si haces cambios)
-   Ejecuta en la terminal:
-   mvn compile
+1. COMPILACIÓN
+   Ejecuta en la terminal (doble clic):
+   compilar.bat
 
-2. MODO INTERACTIVO (Recomendado)
+2. MODO INTERACTIVO (REPL)
    java -cp "target\classes" com.bitcoin.Main
+   (O ejecutar: run_interactive.bat)
 
 3. EJEMPLO DE USO (Dentro del programa)
    Una vez iniciado, verás el prompt ">". Prueba lo siguiente:
 
    > OP_1
      (Salida esperada: Stack: [0x01])
-   
+
    > OP_2
      (Salida esperada: Stack: [0x01, 0x02])
-   
+
    > OP_ADD
      (Salida esperada: Stack: [0x03])
 
@@ -25,24 +31,34 @@
    > OP_GREATERTHAN
      (Salida esperada: Stack: [0x00] -> FALSO, porque 3 no es mayor que 5)
 
-4. PRUEBA DE PAGO (P2PKH) REQUERIDA
-   Para ver la demostración automática de P2PKH (<firma> <pubKey> OP_DUP ...):
-   run_p2pkh.bat
-   
-   Esto generará un script válido con firma y hash correctos y lo ejecutará.
+4. DEMOSTRACIONES OBLIGATORIAS (Fase 2)
 
-5. COMANDOS ÚTILES
+   a) P2PKH CORRECTO:
+      java -cp "target\classes" com.bitcoin.Main --p2pkh --trace
+
+   b) P2PKH INCORRECTO (clave incorrecta, debe fallar):
+      java -cp "target\classes" com.bitcoin.Main --p2pkh-bad --trace
+
+   c) OP_IF / OP_ELSE / OP_ENDIF:
+      java -cp "target\classes" com.bitcoin.Main --demo-if --trace
+
+   d) MULTISIG 2 de 3 (OP_CHECKMULTISIG):
+      java -cp "target\classes" com.bitcoin.Main --demo-multisig --trace
+
+   e) TODAS LAS DEMOS A LA VEZ:
+      java -cp "target\classes" com.bitcoin.Main --demo-all
+
+5. COMANDOS ÚTILES (dentro del REPL)
    - trace on   : Activa el modo detallado (ver pila tras cada paso).
    - trace off  : Desactiva el modo detallado.
    - clear      : Limpia toda la pila (reinicia).
    - exit       : Salir del programa.
 
-5. EJECUTAR UN SCRIPT COMPLETO
-   Si quieres correr una línea entera de una vez:
+6. EJECUTAR UN SCRIPT COMPLETO
    java -cp "target\classes" com.bitcoin.Main --trace "1 2 OP_ADD 5 OP_GREATERTHAN"
 
-6. LISTA DE COMANDOS (OPCODES) DISPONIBLES
-   
+7. LISTA DE COMANDOS (OPCODES) DISPONIBLES
+
    Constantes:
    - OP_0 / OP_FALSE : Empuja 0 (array vacío) a la pila.
    - OP_1 .. OP_16   : Empuja el número correspondiente (1 al 16).
@@ -56,10 +72,10 @@
    - OP_OVER         : Copia el segundo elemento y lo pone arriba.
 
    Lógica:
-   - OP_EQUAL        : Retorna TRUE si los dos topes son iguales (consume ambos).
-   - OP_EQUALVERIFY  : Igual que OP_EQUAL, pero falla el script si no son iguales.
+   - OP_EQUAL        : Retorna TRUE si los dos topes son iguales.
+   - OP_EQUALVERIFY  : Igual que OP_EQUAL, pero falla si no son iguales.
    - OP_VERIFY       : Falla si el tope es falso.
-   - OP_NOT          : Invierte el valor booleano (0->1, 1->0).
+   - OP_NOT          : Invierte el valor booleano.
    - OP_BOOLAND      : AND lógico.
    - OP_BOOLOR       : OR lógico.
 
@@ -68,16 +84,19 @@
    - OP_SUB          : Resta los dos números superiores.
    - OP_LESSTHAN     : Verdadero si a < b.
    - OP_GREATERTHAN  : Verdadero si a > b.
-   - OP_NUMEQUALVERIFY : Falla si los números no son iguales numéricamente.
+   - OP_NUMEQUALVERIFY : Falla si los números no son iguales.
 
    Criptografía (Simulada):
-   - OP_HASH160      : Aplica SHA256 -> RIPEMD160 al tope.
+   - OP_SHA256       : Aplica SHA-256 al tope.
+   - OP_HASH160      : Aplica SHA256 -> SHA1 (simula RIPEMD160) al tope.
    - OP_HASH256      : Aplica SHA256 -> SHA256 al tope.
-   - OP_CHECKSIG     : Verifica firma (Simulado: siempre true para ejemplos válidos).
+   - OP_CHECKSIG     : Verifica firma (simulado).
    - OP_CHECKSIGVERIFY : Igual que CHECKSIG, pero falla si es inválido.
+   - OP_CHECKMULTISIG : Verifica M-de-N firmas (simulado).
 
    Control de Flujo:
    - OP_IF           : Ejecuta el bloque si el tope es verdadero.
    - OP_NOTIF        : Ejecuta el bloque si el tope es falso.
    - OP_ELSE         : Rama alternativa.
    - OP_ENDIF        : Fin del bloque condicional.
+   - OP_RETURN       : Marca el script como inválido inmediatamente.

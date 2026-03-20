@@ -1,9 +1,6 @@
 package com.bitcoin;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.Stack;
-import java.util.Arrays;
 
 public class DataStack {
     private final Stack<byte[]> stack;

@@ -2,7 +2,6 @@ package com.bitcoin;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 
 public class Crypto {
 
