@@ -21,3 +21,6 @@ run_p2pkh.bat
 
 Ver `INSTRUCCIONES.txt` para más detalles.
 "# Proyecto1" 
+
+## VIDEO
+https://youtu.be/dbZoR013dZg
