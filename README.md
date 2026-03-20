@@ -9,18 +9,9 @@ Este repositorio contiene un intérprete de Bitcoin Script implementado en Java.
 
 ## Ejecución
 
-Para iniciar el modo interactivo:
-```bash
-run_interactive.bat
-```
+Para Uso del programa:
+Ver INSTRUCCIONES.TXT
 
-Para ver la demostración P2PKH:
-```bash
-run_p2pkh.bat
-```
-
-Ver `INSTRUCCIONES.txt` para más detalles.
-"# Proyecto1" 
 
 ## VIDEO
 https://youtu.be/dbZoR013dZg
