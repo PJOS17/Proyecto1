@@ -6,8 +6,7 @@ Raul Godinez #25094
 === GUÍA DE USO - INTÉRPRETE DE BITCOIN SCRIPT ===
 
 1. COMPILACIÓN
-   Ejecuta en la terminal (doble clic):
-   compilar.bat
+   Clonar este repositorio: https://github.com/PJOS17/Proyecto1/edit/main/INSTRUCCIONES.txt
 
 2. MODO INTERACTIVO (REPL)
    java -cp "target\classes" com.bitcoin.Main
